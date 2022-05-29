@@ -240,7 +240,7 @@ int main()
 
     S1.Generate(4,4);
 
-    S1(2,0) = 0;
+    S1.Matrix_out();
 
     double Det = S1.Determinant();
 
