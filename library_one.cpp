@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
+
 
 class Matrix
 {
@@ -97,7 +99,7 @@ double Determinant()
 
     try
     {
-    while (n!=2)
+    while (n != 2)
     {
         while (Mat_1[i][0] == 0) //определение строки i с 1м ненулевым элементом и прибавление его к 1му элементу 1й строки
         {
@@ -106,7 +108,7 @@ double Determinant()
         }
 
     if (i != 0)
-        for (int j = 0;j<=m;j++) Mat_1[0][j] += Mat_1[i][j]; //Прибавляем элементы iй строки к элементам 1й
+        for (int j = 0;j<m;j++) Mat_1[0][j] += Mat_1[i][j]; //Прибавляем элементы iй строки к элементам 1й
 
 
         det *= Mat_1[0][0]; // 1й множитель определителя
@@ -160,6 +162,7 @@ double Determinant()
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
+	system("pause");
     } 
     return det;
 }
@@ -238,14 +241,48 @@ int main()
 
     C.Matrix_out();
 
-    S1.Generate(4,4);
+    //S1.Generate(15,15);
 
-    S1.Matrix_out();
+    //S1.Matrix_out();
 
-    double Det = S1.Determinant();
+    double Det ;
 
-    std::cout<<Det<<std::endl;
-    
+    //std::cout<<Det<<std::endl;*/
+
+    Matrix S2(25,25);
+
+
+    std::ofstream fout;
+    fout.open("test_file.txt");
+
+    for (int i = 0; i<25; i++)
+    {
+        for (int j = 0; j<25; j++)
+        {
+            S2(i,j) = rand() % 10;
+        }
+
+    }
+
+	
+    	S2(22,0) = 0;
+	S2(23,0) = 0;
+	S2(24,0) = 0;
+
+	S2(0,0) = 0;
+    	S2.Matrix_out();
+	
+    for (int i = 0; i<25; i++)
+    {
+        for (int j = 0; j<25; j++)
+        {
+          fout<<S2(i,j);
+        }
+
+    }
+
+	Det = S2.Determinant();
+     std::cout<<Det<<std::endl;
     system("pause");
     return 0;
 }
