@@ -1,7 +1,9 @@
+.test_file.txt.swp
 .text_file.txt.swp
 .vscode/settings.json
 Sum.cpp
 Sum.h
 test.cpp
 test_file.txt
-
+library_one.exe
+text_file.txt
