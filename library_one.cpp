@@ -2,6 +2,11 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <stdlib.h>
+#include <time.h>
+#include <cmath>
+//#include <iomanip>
+//#include <cmath>
 
 
 class Matrix
@@ -73,11 +78,11 @@ public:
         std::cout<<"Размер матрицы "<<n<<" x "<<m<<std::endl;
         std::cout<<""<<std::endl;
 
-        for (int i=0;i<n;i++)
+        /*for (int i=0;i<n;i++)
         {
             for (int j=0;j<m;j++) std::cout<<Mat_1[i][j]<<"\t";
             std::cout<<""<<std::endl;
-        }
+        }*/
 
         std::cout<<std::endl;
         
@@ -86,6 +91,30 @@ public:
         //delete[] Mat_1; //Очистка выделенной динамической памяти
 
         
+
+    }
+
+    void read_from_file(std::string file_name)
+    {
+        double a;
+
+        std::ofstream log;
+        log.open("log_read.txt");
+        log << "Открыт файл log_read.txt \n";
+
+        std::ifstream file;        
+        file.open(file_name);
+        log << "Открыт файл "<< file_name << "\n";
+
+        for (int i = 0; i < cols_num; i++)
+            for (int j = 0; j < rows_num; j++)
+            {
+                file >> Mat_1[i][j];
+            }
+        log << "Матрица считана \n";
+        file.close();
+        log << "Закрыт файл " << file_name << "\n";
+        log.close();
 
     }
 
@@ -101,6 +130,7 @@ double Determinant()
     {
     while (n != 2)
     {
+        i = 0;
         while (Mat_1[i][0] == 0) //определение строки i с 1м ненулевым элементом и прибавление его к 1му элементу 1й строки
         {
             //std::cout<<Mat_1[i][0]<<std::endl;
@@ -161,6 +191,7 @@ double Determinant()
 }
     catch(const std::exception& e)
     {
+        std::cout <<"Error" << '\n';
         std::cerr << e.what() << '\n';
 	system("pause");
     } 
@@ -229,52 +260,29 @@ double Determinant()
 
 int main()
 {
-
-    Matrix A, B, C, S1;
-
-   // Matrix C12 (5,5);
-
-    A.Generate(5,5);
-    B.Generate(5,5);
-
-    C = Multiply(A, B);
-
-    C.Matrix_out();
-
-    //S1.Generate(15,15);
-
-    //S1.Matrix_out();
-
+    srand(time(NULL));
     double Det ;
 
-    //std::cout<<Det<<std::endl;*/
+    Matrix S2;
 
-    Matrix S2(25,25);
+    int n;
+    n = 7;
 
+    Matrix S3(n,n);
+    S3.read_from_file("Fail.txt");
+    S3.Matrix_out();
+    Det = S3.Determinant();
+    std::cout<<Det<<"\n";
 
     std::ofstream fout;
     fout.open("test_file.txt");
 
-    for (int i = 0; i<25; i++)
-    {
-        for (int j = 0; j<25; j++)
-        {
-            S2(i,j) = rand() % 10;
-        }
-
-    }
+    S2.Generate(7,7);
 
 	
-    	S2(22,0) = 0;
-	S2(23,0) = 0;
-	S2(24,0) = 0;
-
-	S2(0,0) = 0;
-    	S2.Matrix_out();
-	
-    for (int i = 0; i<25; i++)
+    for (int i = 0; i<n; i++)
     {
-        for (int j = 0; j<25; j++)
+        for (int j = 0; j<n; j++)
         {
           fout<<S2(i,j);
         }
@@ -282,7 +290,12 @@ int main()
     }
 
 	Det = S2.Determinant();
-     std::cout<<Det<<std::endl;
-    system("pause");
+    float Det1 = (float) Det;
+    fout<<round(Det1);
+     std::cout<<std::fixed<<Det1<<std::endl;
+     //std::cout.precision(15);
+     fout.close();
+     //std::cout << std::fixed << std::setprecision(5) << n << std::endl;
+    //system("pause");
     return 0;
 }
