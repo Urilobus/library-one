@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
+#include <iomanip>
 //#include <iomanip>
 //#include <cmath>
 
@@ -22,6 +23,7 @@ public:
     
     Matrix(int n, int m)
     {
+        std::cout<<"Конструкторр для "<<this<<std::endl;
         cols_num = n;
         rows_num = m;
 
@@ -46,8 +48,20 @@ public:
          {
              Mat_1[i][j] = 0;
         }
+        
+    };
 
-    }; 
+    /*Matrix(const Matrix &Mat_ref) Конструктор копирования
+    {
+        rows_num = Mat_ref.rows_num;
+        cols_num = Mat_ref.cols_num;
+        Mat_1 = new double*[rows_num];
+        for(int i = 0; i < rows_num; i++){
+            Mat_1[i] = new double[cols_num];
+            for(int j = 0; j < cols_num; j++)
+                Mat_1[i][j] = Mat_ref.Mat_1[i][j];
+            }
+    } */
 
 
     void Generate(int n, int m)
@@ -74,7 +88,7 @@ public:
         for (int i=0; i<n; i++)
         for (int j=0; j<m; j++)   Mat_1[i][j] = double(rand() % 10);    //Создание матрицы с рандомными значениями [0..9]
 
-        std::cout<<"Сгенерирована матрица\n "<<std::endl;
+        std::cout<<"Сгенерирована матрица "<<this<<std::endl;
         std::cout<<"Размер матрицы "<<n<<" x "<<m<<std::endl;
         std::cout<<""<<std::endl;
 
@@ -198,6 +212,44 @@ double Determinant()
     return det;
 }
 
+/*Matrix Transpose()
+{
+    Matrix  Mat_trans(cols_num, rows_num);
+    for(int i = 0; i < cols_num; i++)
+        for (int j = 0; j < rows_num; j++)
+            Mat_trans(i,j) = Mat_1[j][i]; 
+    return Mat_trans;    
+}*/
+/*/Matrix Minor()
+{
+    Matrix Mat_Minor(cols_num, rows_num);
+    for (int i = 0; i < Mat_Minor.cols_num; i++)
+        for (int j = 0; j < Mat_Minor.rows_num; j++)
+        {
+            Mat_Minor(i,j) = ; 
+        }B
+}*/
+
+double& operator()(int index1, int index2)
+    {
+	    return Mat_1[index1][index2];
+    }
+
+//Конструктор копирования
+Matrix (Matrix &Mat)
+{
+    this->cols_num = Mat.cols_num;
+    this->rows_num = Mat.rows_num;
+    Mat_1 = new double*[Mat.cols_num];
+    for (int i = 0; i < Mat.cols_num; i++)
+    {
+        Mat_1[i] = new double[Mat.rows_num];
+        for (int j = 0; j < Mat.rows_num; j++) Mat_1[i][j] = Mat(i,j);
+    } 
+    std::cout<<"Копирование "<<this<<std::endl;
+    
+}
+
 
     //Вывод матрицы
     void Matrix_out()
@@ -212,17 +264,30 @@ double Determinant()
         }
     }
     
-        double& operator()(int index1, int index2)
+    
+    Matrix& operator = (Matrix& Mat)
+    {
+        double **Mat_copy;
+        this->cols_num = Mat.cols_num;
+        this->rows_num = Mat.rows_num;
+        Mat_copy = new double*[Mat.cols_num];
+        for (int i = 0; i < Mat.cols_num; i++)
         {
-		    return Mat_1[index1][index2];
+            Mat_copy[i] = new double[Mat.rows_num];
+            for (int j = 0; j < Mat.rows_num; j++) Mat_copy[i][j] = Mat(i,j);
         }
+        Mat_1 = Mat_copy;
+        return *this;
+    }
+
    
-       /* ~Matrix()
-        {
-            std::cout<<"Деструктор для "<<this<<std::endl;
-        for (int i=0;i<cols_num;i++)    delete Mat_1[i];
-        delete[] Mat_1; //Очистка выделенной динамической памяти 
-        }*/
+    //Деструктор
+   ~Matrix() 
+    {
+        std::cout<<"Деструктор для "<<this<<std::endl;
+        for (int i = 0; i < rows_num; i++) delete[] Mat_1[i];
+        delete[] Mat_1;
+    };
 
 };
 
@@ -254,48 +319,30 @@ double Determinant()
 
     /*for (int i=0;i<n1+1;i++) delete ar3[i];
     delete[] ar3; //Очистка выделенной динамической памяти*/
+
+   }
+
+Matrix Transpose(Matrix &Mat)
+{
+    Matrix Mat_trans(Mat.cols_num, Mat.rows_num); 
+    for(int i = 0; i < Mat_trans.cols_num; i++)
+        for (int j = 0; j < Mat_trans.rows_num; j++)
+            Mat_trans(i,j) = Mat(j,i); 
+    return Mat_trans;    
 }
-
-
 
 int main()
 {
-    srand(time(NULL));
-    double Det ;
+    //srand(time(NULL));
 
-    Matrix S2;
-
-    int n;
-    n = 7;
-
-    Matrix S3(n,n);
-    S3.read_from_file("Fail.txt");
+    Matrix S1(5,5);
+    Matrix S3;
+    S1.Generate(5,5);
+    S3 = S1;
+    std::cout<<"Исходная матрица\n";
+    S1.Matrix_out();
+    std::cout<<"Транспонированная матрица\n";
     S3.Matrix_out();
-    Det = S3.Determinant();
-    std::cout<<Det<<"\n";
-
-    std::ofstream fout;
-    fout.open("test_file.txt");
-
-    S2.Generate(7,7);
-
-	
-    for (int i = 0; i<n; i++)
-    {
-        for (int j = 0; j<n; j++)
-        {
-          fout<<S2(i,j);
-        }
-
-    }
-
-	Det = S2.Determinant();
-    float Det1 = (float) Det;
-    fout<<round(Det1);
-     std::cout<<std::fixed<<Det1<<std::endl;
-     //std::cout.precision(15);
-     fout.close();
-    //std::cout << std::fixed << std::setprecision(10) << n << std::endl;
-    //system("pause");
+    system("pause");
     return 0;
 }
