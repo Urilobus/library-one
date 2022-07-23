@@ -295,7 +295,7 @@ int main()
      std::cout<<std::fixed<<Det1<<std::endl;
      //std::cout.precision(15);
      fout.close();
-     //std::cout << std::fixed << std::setprecision(5) << n << std::endl;
+    //std::cout << std::fixed << std::setprecision(10) << n << std::endl;
     //system("pause");
     return 0;
 }
