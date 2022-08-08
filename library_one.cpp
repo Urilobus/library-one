@@ -182,8 +182,6 @@ double Determinant()
     return det;
 }
 
-
-
 double& operator()(int index1, int index2)
     {
 	    return Mat_1[index1][index2];
@@ -252,7 +250,7 @@ Matrix (const Matrix &Mat)
 };
 
  // Функция умножения матриц 5x5
-    Matrix Multiply(Matrix ar1, Matrix ar2)  
+    Matrix Multiply(Matrix& ar1, Matrix& ar2)  
     {
         Matrix ar3(ar1.rows_num, ar2.cols_num); //Создание указателя на указатель (Двухмерный массив)
 
@@ -286,6 +284,26 @@ const Matrix Transpose(const Matrix &Mat)
     return Mat_trans;    
 }
 
+//Минор (Вычёркивание строки и столбца)
+const Matrix Minor(Matrix& Inp_Mat, int n, int m)
+{
+    int i1 = 0, j1 = 0;
+    Matrix Out_Mat(Inp_Mat.cols_num - 1, Inp_Mat.rows_num - 1);
+    for (int i = 0; i < Inp_Mat.cols_num; i++)
+    {
+        if (i == n) continue;
+        for (int j = 0; j < Inp_Mat.rows_num; j++)
+        {
+            if (j == m) continue;
+            Out_Mat(i1,j1) = Inp_Mat(i,j);
+            j1++;
+        }
+        i1++; j1 = 0;
+    }
+
+    return Out_Mat;
+}
+
 int main()
 {
     Matrix S1(5,5);
@@ -295,13 +313,17 @@ int main()
     std::cout<<"Исходная матрица\n";
     S1.Matrix_out();
     std::cout<<"Транспонированная матрица\n";
-    S3.Matrix_out();
+    S3.Matrix_out();/*
     double det;
     for (int i = 0; i < 10; i++){
     S1.Generate();
     det = S1.Determinant();
     std::cout<<"Det = "<<det<<"\n";
-    }
+    }*/
+    S3 = Multiply(S1,S1);
+    S3.Matrix_out();
+    S3 = Minor(S1,2,3);
+    S3.Matrix_out();
     system("pause");
     return 0;
 }
