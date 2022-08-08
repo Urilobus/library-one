@@ -4,10 +4,6 @@
 #include <fstream>
 #include <stdlib.h>
 #include <time.h>
-#include <cmath>
-#include <iomanip>
-//#include <iomanip>
-//#include <cmath>
 
 
 class Matrix
@@ -51,19 +47,7 @@ public:
         
     };
 
-    /*Matrix(const Matrix &Mat_ref) Конструктор копирования
-    {
-        rows_num = Mat_ref.rows_num;
-        cols_num = Mat_ref.cols_num;
-        Mat_1 = new double*[rows_num];
-        for(int i = 0; i < rows_num; i++){
-            Mat_1[i] = new double[cols_num];
-            for(int j = 0; j < cols_num; j++)
-                Mat_1[i][j] = Mat_ref.Mat_1[i][j];
-            }
-    } */
-
-
+    //Генерация случайной матрицы с выделением памяти
     void Generate(int n, int m)
     {
         cols_num = n;
@@ -92,19 +76,21 @@ public:
         std::cout<<"Размер матрицы "<<n<<" x "<<m<<std::endl;
         std::cout<<""<<std::endl;
 
-        /*for (int i=0;i<n;i++)
-        {
-            for (int j=0;j<m;j++) std::cout<<Mat_1[i][j]<<"\t";
-            std::cout<<""<<std::endl;
-        }*/
+        std::cout<<std::endl;        
 
-        std::cout<<std::endl;
-        
+    }
 
-        //for (int i=0;i<m+1;i++)    delete Mat_1[i];
-        //delete[] Mat_1; //Очистка выделенной динамической памяти
+    //Генерация случайной матрицы без выделения памяти
+    void Generate()
+    {
+        for (int i=0; i < cols_num; i++)
+        for (int j=0; j < rows_num; j++)   Mat_1[i][j] = double(rand() % 10);    //Создание матрицы с рандомными значениями [0..9]
 
-        
+        std::cout<<"Сгенерирована матрица "<<this<<std::endl;
+        std::cout<<"Размер матрицы "<<cols_num<<" x "<<rows_num<<std::endl;
+        std::cout<<""<<std::endl;
+
+        std::cout<<std::endl;        
 
     }
 
@@ -154,7 +140,6 @@ double Determinant()
     if (i != 0)
         for (int j = 0;j<m;j++) Mat_1[0][j] += Mat_1[i][j]; //Прибавляем элементы iй строки к элементам 1й
 
-
         det *= Mat_1[0][0]; // 1й множитель определителя
 
         double koef;
@@ -167,10 +152,7 @@ double Determinant()
         {
             Mat_1[i][j] += Mat_1[0][j] * koef;
         }
-        //std::cout<<"Koef "<<koef<<std::endl;
     }
-
-    //std::cout<<"Koef "<<koef<<std::endl;
 
     for (int i = 1;i<n;i++)
     {
@@ -184,22 +166,10 @@ double Determinant()
     n--;
     m--;
 
-    //std::cout<<"Det "<<det<<std::endl;
 
-   /*for (int i=0;i<n;i++)
-    {
-        for (int j=0;j<m;j++) std::cout<<Mat_1[i][j]<<"\t";
-        //std::cout<<""<<std::endl;
     }
-    //std::cout<<""<<std::endl;*/
-    }
-
-    //std::cout<<n<<" "<<m<<std::endl;
 
     det = det * (Mat_1[0][0] * Mat_1[1][1] - Mat_1[0][1] * Mat_1[1][0]);
-
-    //std::cout<<" "<<std::endl;
-    //std::cout<<"Det "<<det<<std::endl;
     return det;
 
 }
@@ -212,32 +182,22 @@ double Determinant()
     return det;
 }
 
-/*Matrix Transpose()
-{
-    Matrix  Mat_trans(cols_num, rows_num);
-    for(int i = 0; i < cols_num; i++)
-        for (int j = 0; j < rows_num; j++)
-            Mat_trans(i,j) = Mat_1[j][i]; 
-    return Mat_trans;    
-}*/
-/*/Matrix Minor()
-{
-    Matrix Mat_Minor(cols_num, rows_num);
-    for (int i = 0; i < Mat_Minor.cols_num; i++)
-        for (int j = 0; j < Mat_Minor.rows_num; j++)
-        {
-            Mat_Minor(i,j) = ; 
-        }B
-}*/
+
 
 double& operator()(int index1, int index2)
     {
 	    return Mat_1[index1][index2];
     }
 
+double& operator()(int& index1, int& index2) const
+    {
+	    return Mat_1[index1][index2];
+    }
+
 //Конструктор копирования
-Matrix (Matrix &Mat)
+Matrix (const Matrix &Mat)
 {
+    int k = 2;
     this->cols_num = Mat.cols_num;
     this->rows_num = Mat.rows_num;
     Mat_1 = new double*[Mat.cols_num];
@@ -265,7 +225,7 @@ Matrix (Matrix &Mat)
     }
     
     
-    Matrix& operator = (Matrix& Mat)
+    Matrix& operator = (const Matrix& Mat)
     {
         double **Mat_copy;
         this->cols_num = Mat.cols_num;
@@ -301,9 +261,7 @@ Matrix (Matrix &Mat)
             std::cout<<"\n Несоответствие размерностей матриц"; //Проверка размерности матриц
             exit(1);
         }
-
-        //ar3.Generate(ar1.rows_num, ar2.cols_num);
-    
+  
     
         // Цикл перемножения матриц 
         for (int i=0; i<ar1.cols_num; i++)
@@ -317,12 +275,9 @@ Matrix (Matrix &Mat)
 
     return ar3; //Возвращаем результат умножения (Матрица)
 
-    /*for (int i=0;i<n1+1;i++) delete ar3[i];
-    delete[] ar3; //Очистка выделенной динамической памяти*/
-
    }
 
-Matrix Transpose(Matrix &Mat)
+const Matrix Transpose(const Matrix &Mat)
 {
     Matrix Mat_trans(Mat.cols_num, Mat.rows_num); 
     for(int i = 0; i < Mat_trans.cols_num; i++)
@@ -333,16 +288,20 @@ Matrix Transpose(Matrix &Mat)
 
 int main()
 {
-    //srand(time(NULL));
-
     Matrix S1(5,5);
     Matrix S3;
-    S1.Generate(5,5);
-    S3 = S1;
+    S1.Generate();
+    S3 = Transpose(S1);
     std::cout<<"Исходная матрица\n";
     S1.Matrix_out();
     std::cout<<"Транспонированная матрица\n";
     S3.Matrix_out();
+    double det;
+    for (int i = 0; i < 10; i++){
+    S1.Generate();
+    det = S1.Determinant();
+    std::cout<<"Det = "<<det<<"\n";
+    }
     system("pause");
     return 0;
 }
