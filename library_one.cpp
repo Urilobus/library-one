@@ -4,7 +4,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <time.h>
-
+#include <cmath>
 
 class Matrix
 {
@@ -249,7 +249,69 @@ Matrix (const Matrix &Mat)
 
 };
 
- // Функция умножения матриц 5x5
+double Determinant(Matrix Inp_Mat)  
+{
+    int i = 0;
+    int n = Inp_Mat.cols_num;
+    int m = Inp_Mat.rows_num;
+    double det = 1;
+    
+    try
+    {
+    while (n != 2)
+    {
+        i = 0;
+        while (Inp_Mat(i,0) == 0) //определение строки i с 1м ненулевым элементом и прибавление его к 1му элементу 1й строки
+        {
+            i++;
+        }
+
+    if (i != 0)
+        for (int j = 0; j < m ; j++) Inp_Mat(0,j) += Inp_Mat(i,j); //Прибавляем элементы iй строки к элементам 1й
+
+        det *= Inp_Mat(0,0); // 1й множитель определителя
+
+        double koef;
+
+    for (int i = 1;i<n;i++) if (Inp_Mat(i,0) != 0)
+    {
+        koef = - Inp_Mat(i,0)/double(Inp_Mat(0,0));
+
+        for (int j = 0;j<m;j++)
+        {
+            Inp_Mat(i,j) += Inp_Mat(0,j) * koef;
+        }
+    }
+
+    for (int i = 1;i<n;i++)
+    {
+        for (int j = 0; j<m-1;j++)
+        {
+            Inp_Mat(i-1,j) = Inp_Mat(i,j+1);
+
+        }
+    }
+    
+    n--;
+    m--;
+
+
+    }
+
+    det = det * (Inp_Mat(0,0) * Inp_Mat(1,1) - Inp_Mat(0,1) * Inp_Mat(1,0));
+    return det;
+
+}
+    catch(const std::exception& e)
+    {
+        std::cout <<"Error" << '\n';
+        std::cerr << e.what() << '\n';
+	system("pause");
+    } 
+    return det;
+}
+
+ // Функция умножения матриц
     Matrix Multiply(Matrix& ar1, Matrix& ar2)  
     {
         Matrix ar3(ar1.rows_num, ar2.cols_num); //Создание указателя на указатель (Двухмерный массив)
@@ -285,7 +347,7 @@ const Matrix Transpose(const Matrix &Mat)
 }
 
 //Минор (Вычёркивание строки и столбца)
-const Matrix Minor(Matrix& Inp_Mat, int n, int m)
+Matrix Minor(Matrix& Inp_Mat, int n, int m)
 {
     int i1 = 0, j1 = 0;
     Matrix Out_Mat(Inp_Mat.cols_num - 1, Inp_Mat.rows_num - 1);
@@ -304,26 +366,45 @@ const Matrix Minor(Matrix& Inp_Mat, int n, int m)
     return Out_Mat;
 }
 
+const Matrix Alg_Dop(Matrix& Inp_Mat)
+{
+    double Det1;
+    Det1 = Determinant(Inp_Mat);
+    Matrix Out_Mat(Inp_Mat.cols_num, Inp_Mat.rows_num);
+    Matrix Intermid_Mat(Inp_Mat.cols_num - 1, Inp_Mat.rows_num - 1);
+    for (int i = 0; i < Inp_Mat.cols_num; i++)
+        for (int j = 0; j < Inp_Mat.rows_num; j++)
+        {
+            Intermid_Mat = Minor(Inp_Mat, i, j);
+            Out_Mat(i,j) =std::pow(-1,i + j) * Determinant(Intermid_Mat);
+        }
+    Out_Mat = Transpose(Out_Mat);
+    for (int i = 0; i < Inp_Mat.cols_num; i++)
+        for (int j = 0; j < Inp_Mat.rows_num; j++)
+            Out_Mat(i,j) = Out_Mat(i,j)/Det1;
+    return Out_Mat;
+}
+
 int main()
 {
-    Matrix S1(5,5);
-    Matrix S3;
+    srand(time(NULL));
+    Matrix S1(3,3);
+    Matrix S3, S4;
     S1.Generate();
-    S3 = Transpose(S1);
-    std::cout<<"Исходная матрица\n";
+    std::cout<<"S1"<<"\n";
     S1.Matrix_out();
-    std::cout<<"Транспонированная матрица\n";
-    S3.Matrix_out();/*
-    double det;
-    for (int i = 0; i < 10; i++){
-    S1.Generate();
-    det = S1.Determinant();
-    std::cout<<"Det = "<<det<<"\n";
-    }*/
-    S3 = Multiply(S1,S1);
+    S3 = Alg_Dop(S1); 
+    std::cout<<"S3"<<"\n";
     S3.Matrix_out();
-    S3 = Minor(S1,2,3);
-    S3.Matrix_out();
+    S4 = Multiply(S1,S3);
+    std::cout<<"S4"<<"\n";
+    S4.Matrix_out();
+   /** double Det1;
+    Det1 = S1.Determinant();
+    for (int i = 0; i < S1.cols_num; i++)
+        for (int j = 0; j < S1.rows_num; j++)
+            S4(i,j) = S4(i,j)/Det1;
+    S4.Matrix_out();*/
     system("pause");
     return 0;
 }
