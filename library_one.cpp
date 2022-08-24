@@ -133,7 +133,6 @@ double Determinant()
         i = 0;
         while (Mat_1[i][0] == 0) //определение строки i с 1м ненулевым элементом и прибавление его к 1му элементу 1й строки
         {
-            //std::cout<<Mat_1[i][0]<<std::endl;
             i++;
         }
 
@@ -234,6 +233,7 @@ Matrix (const Matrix &Mat)
             Mat_copy[i] = new double[Mat.rows_num];
             for (int j = 0; j < Mat.rows_num; j++) Mat_copy[i][j] = Mat(i,j);
         }
+        std::cout<<"Присваивание"<<"\n";
         Mat_1 = Mat_copy;
         return *this;
     }
@@ -366,7 +366,25 @@ Matrix Minor(Matrix& Inp_Mat, int n, int m)
     return Out_Mat;
 }
 
-const Matrix Alg_Dop(Matrix& Inp_Mat)
+Matrix Minor(Matrix& Out_Mat, Matrix& Inp_Mat, int n, int m)
+{
+    int i1 = 0, j1 = 0;
+    for (int i = 0; i < Inp_Mat.cols_num; i++)
+    {
+        if (i == n) continue;
+        for (int j = 0; j < Inp_Mat.rows_num; j++)
+        {
+            if (j == m) continue;
+            Out_Mat(i1,j1) = Inp_Mat(i,j);
+            j1++;
+        }
+        i1++; j1 = 0;
+    }
+
+    return Out_Mat;
+}
+
+const Matrix Reverse(Matrix& Inp_Mat)
 {
     double Det1;
     Det1 = Determinant(Inp_Mat);
@@ -375,10 +393,20 @@ const Matrix Alg_Dop(Matrix& Inp_Mat)
     for (int i = 0; i < Inp_Mat.cols_num; i++)
         for (int j = 0; j < Inp_Mat.rows_num; j++)
         {
-            Intermid_Mat = Minor(Inp_Mat, i, j);
-            Out_Mat(i,j) =std::pow(-1,i + j) * Determinant(Intermid_Mat);
+            int i1 = 0, j1 = 0;
+            for (int n = 0; n < Inp_Mat.cols_num; n++)
+            {
+                if (n == i) continue;
+                for (int m = 0; m < Inp_Mat.rows_num; m++)
+                {
+                    if (m == j) continue;
+                    Intermid_Mat(i1,j1) = Inp_Mat(n,m);
+                    j1++;
+                }
+                i1++; j1 = 0;
+            }
+            Out_Mat(j, i) =std::pow(-1,i + j) * Determinant(Intermid_Mat);
         }
-    Out_Mat = Transpose(Out_Mat);
     for (int i = 0; i < Inp_Mat.cols_num; i++)
         for (int j = 0; j < Inp_Mat.rows_num; j++)
             Out_Mat(i,j) = Out_Mat(i,j)/Det1;
@@ -388,23 +416,19 @@ const Matrix Alg_Dop(Matrix& Inp_Mat)
 int main()
 {
     srand(time(NULL));
+    std::cout<<std::fixed;
+    std::cout.precision(5);
     Matrix S1(3,3);
     Matrix S3, S4;
     S1.Generate();
     std::cout<<"S1"<<"\n";
     S1.Matrix_out();
-    S3 = Alg_Dop(S1); 
+    S3 = Reverse(S1); 
     std::cout<<"S3"<<"\n";
     S3.Matrix_out();
     S4 = Multiply(S1,S3);
     std::cout<<"S4"<<"\n";
     S4.Matrix_out();
-   /** double Det1;
-    Det1 = S1.Determinant();
-    for (int i = 0; i < S1.cols_num; i++)
-        for (int j = 0; j < S1.rows_num; j++)
-            S4(i,j) = S4(i,j)/Det1;
-    S4.Matrix_out();*/
     system("pause");
     return 0;
 }
